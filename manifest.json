@@ -5,7 +5,9 @@
   "description": "Automate bulk inventory entry for Myntra partner portal",
   "permissions": [
     "cookies",
-    "activeTab"
+    "activeTab",
+    "webRequest",
+    "storage"
   ],
   "host_permissions": [
     "https://partnersapi.myntrainfo.com/*",

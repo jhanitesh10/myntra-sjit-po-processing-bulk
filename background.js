@@ -8,6 +8,55 @@ let currentProgress = {
   failed: 0
 };
 
+// Target URL to intercept
+const TARGET_URL = 'https://partnersapi.myntrainfo.com/api/scanandpack/cartonItem/create';
+
+// Listen for the request to capture body (cartonId, vendorId, skuCode)
+chrome.webRequest.onBeforeRequest.addListener(
+  (details) => {
+    if (details.method === 'POST' && details.requestBody && details.requestBody.raw) {
+      try {
+        const decoder = new TextDecoder('utf-8');
+        const rawData = details.requestBody.raw[0].bytes;
+        const jsonString = decoder.decode(rawData);
+        const payload = JSON.parse(jsonString);
+
+        if (payload.cartonId && payload.vendorId) {
+          console.log('Captured Payload:', payload);
+          chrome.storage.local.set({
+            lastCapturedPayload: {
+              cartonId: payload.cartonId,
+              vendorId: payload.vendorId,
+              skuCode: payload.skuCode
+            }
+          });
+        }
+      } catch (e) {
+        console.error('Error parsing request body:', e);
+      }
+    }
+  },
+  { urls: [TARGET_URL] },
+  ['requestBody']
+);
+
+// Listen for headers to capture cookies
+chrome.webRequest.onBeforeSendHeaders.addListener(
+  (details) => {
+    for (let i = 0; i < details.requestHeaders.length; ++i) {
+      if (details.requestHeaders[i].name.toLowerCase() === 'cookie') {
+        const cookieValue = details.requestHeaders[i].value;
+        console.log('Captured Cookie:', cookieValue);
+        chrome.storage.local.set({ lastCapturedCookie: cookieValue });
+        break;
+      }
+    }
+  },
+  { urls: [TARGET_URL] },
+  ['requestHeaders', 'extraHeaders']
+);
+
+
 // Listen for messages from popup
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'startRequests') {
@@ -41,11 +90,16 @@ async function startRequests(data) {
 
   const { cartonId, vendorId, skuCode, requestCount } = data;
 
-  // Get cookies from the browser
-  const cookies = await getCookies();
+  // Get cookies - prioritize captured cookie
+  let cookies = await getCapturedCookie();
 
   if (!cookies) {
-    notifyPopup('error', 'Failed to get session cookies. Please make sure you are logged into Myntra partner portal.');
+    // Fallback to browser cookies
+    cookies = await getCookies();
+  }
+
+  if (!cookies) {
+    notifyPopup('error', 'Failed to get session cookies. Please make sure you have performed at least one manual action on the portal to capture the session.');
     isRunning = false;
     return;
   }
@@ -92,7 +146,7 @@ async function startRequests(data) {
 
 // Make a single API request
 async function makeRequest(cartonId, vendorId, skuCode, cookies, requestNumber) {
-  const url = 'https://partnersapi.myntrainfo.com/api/scanandpack/cartonItem/create';
+  const url = TARGET_URL;
 
   const payload = {
     cartonId: parseInt(cartonId),
@@ -125,7 +179,15 @@ async function makeRequest(cartonId, vendorId, skuCode, cookies, requestNumber) 
   return await response.json();
 }
 
-// Get cookies from the browser
+async function getCapturedCookie() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(['lastCapturedCookie'], (result) => {
+      resolve(result.lastCapturedCookie || null);
+    });
+  });
+}
+
+// Get cookies from the browser (Fallback)
 async function getCookies() {
   try {
     const cookies = await chrome.cookies.getAll({

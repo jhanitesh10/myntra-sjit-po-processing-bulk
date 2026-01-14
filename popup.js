@@ -129,7 +129,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-// Check if there's an ongoing process when popup opens
+// Check if there's an ongoing process when popup opens, and auto-fill form
 chrome.runtime.sendMessage({ action: 'getStatus' }, (response) => {
   if (response && response.isRunning) {
     isRunning = true;
@@ -140,5 +140,24 @@ chrome.runtime.sendMessage({ action: 'getStatus' }, (response) => {
     logContainer.style.display = 'block';
     updateProgress(response.completed, response.total);
     showStatus('Process is running...', 'info');
+  } else {
+    // If not running, try to auto-fill (only if fields are empty)
+    chrome.storage.local.get(['lastCapturedPayload'], (result) => {
+      if (result.lastCapturedPayload) {
+        const { cartonId, vendorId, skuCode } = result.lastCapturedPayload;
+
+        // Only fill if empty to avoid overwriting user input
+        // But since the popup is fresh, they are likely empty or default.
+        // Let's just fill them and show a message.
+        if (cartonId) document.getElementById('cartonId').value = cartonId;
+        if (vendorId) document.getElementById('vendorId').value = vendorId;
+        if (skuCode) document.getElementById('skuCode').value = skuCode;
+
+        showStatus('✨ Auto-filled from last session', 'info');
+        setTimeout(() => {
+          if(!isRunning) status.style.display = 'none';
+        }, 3000);
+      }
+    });
   }
 });
