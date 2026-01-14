@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Myntra Inventory Automation Extension</title>
+  <meta name="description" content="Automate bulk inventory entry for Myntra partner portal. Save hours of work with a simple Chrome extension.">
+  <style>
+    :root {
+      --primary: #667eea;
+      --secondary: #764ba2;
+      --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      --text-dark: #333;
+      --text-light: #666;
+      --bg-light: #f5f5f5;
+      --white: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--bg-light);
+      color: var(--text-dark);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Hero Section */
+    .hero {
+      background: var(--gradient);
+      color: var(--white);
+      padding: 80px 0;
+      text-align: center;
+      margin-bottom: 60px;
+      clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      font-weight: 800;
+    }
+
+    .hero p {
+      font-size: 20px;
+      margin-bottom: 40px;
+      opacity: 0.9;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 16px 32px;
+      background: var(--white);
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 50px;
+      font-size: 18px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    .cta-sub {
+      display: block;
+      margin-top: 10px;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    /* Steps Section */
+    .steps-section {
+      padding: 40px 0;
+    }
+
+    .step-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      background: var(--gradient);
+      color: var(--white);
+      border-radius: 50%;
+      text-align: center;
+      line-height: 40px;
+      font-weight: bold;
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
+
+    .step-title {
+      font-size: 24px;
+      color: var(--text-dark);
+      font-weight: 600;
+    }
+
+    .step-content {
+      color: var(--text-light);
+      padding-left: 55px;
+    }
+
+    .code-snippet {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 15px;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      margin: 10px 0;
+      overflow-x: auto;
+    }
+
+    /* Feature Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin: 40px 0;
+    }
+
+    .feature-card {
+      background: var(--white);
+      padding: 25px;
+      border-radius: 12px;
+      border-left: 5px solid var(--primary);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .feature-icon {
+      font-size: 32px;
+      margin-bottom: 15px;
+    }
+
+    .feature-card h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: var(--text-dark);
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    /* Visual Demo (from demo.html) */
+    .demo-visual {
+      max-width: 400px;
+      margin: 30px auto;
+      background: var(--gradient);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+
+    .popup-mockup {
+      background: var(--white);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .mock-input {
+      background: #f0f0f0;
+      border: 1px solid #e0e0e0;
+      height: 36px;
+      width: 100%;
+      margin-bottom: 12px;
+      border-radius: 6px;
+    }
+    .mock-label { font-size: 12px; margin-bottom: 4px; display: block; font-weight: 600; }
+    .mock-btn { height: 40px; width: 100%; background: var(--gradient); border-radius: 6px; margin-top: 10px; }
+    
+    /* Time Savings */
+    .savings-section {
+      text-align: center;
+      padding: 60px 0;
+      background: var(--white);
+      border-radius: 20px;
+      margin: 60px 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    .stat-grid {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+
+    .stat-item h3 { font-size: 48px; color: var(--primary); margin-bottom: 10px; }
+    .stat-item p { font-size: 18px; color: var(--text-light); }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 0;
+      color: var(--text-light);
+      border-top: 1px solid #eee;
+      margin-top: 60px;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 36px; }
+      .stat-grid { gap: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="container">
+      <h1>📦 Myntra Inventory Automation</h1>
+      <p>Automate bulk inventory updates in minutes, not hours. A simple, secure Chrome extension for Myntra partners.</p>
+      
+      <a href="extension.zip" class="cta-button" download>
+        Download Extension
+      </a>
+      <span class="cta-sub">v1.0.0 • ZIP file • Free to use</span>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- Time Savings Highlight -->
+    <section class="savings-section">
+      <h2>Why use this tool?</h2>
+      <div class="stat-grid">
+        <div class="stat-item">
+          <h3>95%</h3>
+          <p>Less time spent</p>
+        </div>
+        <div class="stat-item">
+          <h3>0</h3>
+          <p>Manual errors</p>
+        </div>
+        <div class="stat-item">
+          <h3>1000+</h3>
+          <p>Requests per batch</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Installation Steps -->
+    <section class="steps-section" id="install">
+      <h2 style="text-align: center; margin-bottom: 40px;">How to Install</h2>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">1</div>
+          <div class="step-title">Download & Extract</div>
+        </div>
+        <div class="step-content">
+          <p>Click the download button above to get the <code>extension.zip</code> file. Extract/Unzip the contents to a folder on your computer.</p>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">2</div>
+          <div class="step-title">Load in Chrome</div>
+        </div>
+        <div class="step-content">
+          <p>Open Google Chrome and paste this into the address bar:</p>
+          <div class="code-snippet">chrome://extensions/</div>
+          <p style="margin-top: 15px;">Enable <strong>Developer mode</strong> (top right), then click <strong>Load unpacked</strong> and select the folder you extracted.</p>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-number">3</div>
+          <div class="step-title">Start Automating</div>
+        </div>
+        <div class="step-content">
+          <p>Login to the <a href="https://partners.myntrainfo.com/" target="_blank">Myntra Partner Portal</a>. Click the extension icon in your toolbar, enter your inventory details, and hit start!</p>
+          
+          <div class="demo-visual">
+            <div class="popup-mockup">
+              <label class="mock-label">Carton ID</label>
+              <div class="mock-input"></div>
+              <label class="mock-label">Vendor ID</label>
+              <div class="mock-input"></div>
+              <label class="mock-label">SKU Code</label>
+              <div class="mock-input"></div>
+              <div class="mock-btn"></div>
+            </div>
+            <p style="color: white; text-align: center; margin-top: 15px; font-size: 14px;">Simple, clean interface</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section>
+      <h2 style="text-align: center; margin-bottom: 20px;">Key Features</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🔐</div>
+          <h3>Secure & Private</h3>
+          <p>Runs entirely in your browser. Extracts session cookies automatically without storing sensitive data.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Smart Automation</h3>
+          <p>Makes requests at safe intervals (1/sec) to respect API limits while working as fast as possible.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Live Tracking</h3>
+          <p>Watch progress in real-time. See success/failure status for every single request instantly.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🛑</div>
+          <h3>Full Control</h3>
+          <p>Stop the process at any time. The extension handles errors gracefully and keeps running.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>Myntra Inventory Automation Extension • v1.0.0</p>
+      <p style="font-size: 12px; margin-top: 10px;">Not affiliated with Myntra. Use responsibly and in accordance with API policies.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
