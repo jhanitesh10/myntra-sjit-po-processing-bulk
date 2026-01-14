@@ -136,6 +136,32 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
+// Settings Toggle
+const settingsToggle = document.getElementById('settingsToggle');
+const advancedSettings = document.getElementById('advancedSettings');
+
+settingsToggle.addEventListener('click', (e) => {
+  e.preventDefault();
+  if (advancedSettings.style.display === 'none') {
+    advancedSettings.style.display = 'block';
+    settingsToggle.textContent = 'Advanced Settings ▲';
+  } else {
+    advancedSettings.style.display = 'none';
+    settingsToggle.textContent = 'Advanced Settings ▼';
+  }
+});
+
+// Input Persistence
+const inputs = ['cartonId', 'vendorId', 'skuCode', 'requestCount', 'delay'];
+inputs.forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('input', () => {
+    const val = el.value;
+    chrome.storage.local.set({ [id]: val });
+  });
+});
+
+
 // Check if there's an ongoing process when popup opens, and auto-fill form
 chrome.runtime.sendMessage({ action: 'getStatus' }, (response) => {
   if (response && response.isRunning) {
@@ -148,22 +174,45 @@ chrome.runtime.sendMessage({ action: 'getStatus' }, (response) => {
     updateProgress(response.completed, response.total);
     showStatus('Process is running...', 'info');
   } else {
-    // If not running, try to auto-fill (only if fields are empty)
-    chrome.storage.local.get(['lastCapturedPayload'], (result) => {
+    // Load persisted values
+    chrome.storage.local.get(['cartonId', 'vendorId', 'skuCode', 'requestCount', 'delay', 'lastCapturedPayload'], (result) => {
+
+      // Priority 1: Persisted user input
+      if (result.cartonId) document.getElementById('cartonId').value = result.cartonId;
+      if (result.vendorId) document.getElementById('vendorId').value = result.vendorId;
+      if (result.skuCode) document.getElementById('skuCode').value = result.skuCode;
+      if (result.requestCount) document.getElementById('requestCount').value = result.requestCount;
+      if (result.delay) document.getElementById('delay').value = result.delay;
+
+      // Priority 2: Auto-captured payload (only if fields are empty)
+      // Actually, let's only auto-fill if the user has NOT manually entered something distinct,
+      // OR if the user explicitly wants it.
+      // Current behavior: If we have captured payload, it might overwrite manual empty fields.
+      // Better behavior: Check if empty, then fill.
+
       if (result.lastCapturedPayload) {
+        let autoFilled = false;
         const { cartonId, vendorId, skuCode } = result.lastCapturedPayload;
 
-        // Only fill if empty to avoid overwriting user input
-        // But since the popup is fresh, they are likely empty or default.
-        // Let's just fill them and show a message.
-        if (cartonId) document.getElementById('cartonId').value = cartonId;
-        if (vendorId) document.getElementById('vendorId').value = vendorId;
-        if (skuCode) document.getElementById('skuCode').value = skuCode;
+        if (!document.getElementById('cartonId').value && cartonId) {
+           document.getElementById('cartonId').value = cartonId;
+           autoFilled = true;
+        }
+        if (!document.getElementById('vendorId').value && vendorId) {
+           document.getElementById('vendorId').value = vendorId;
+           autoFilled = true;
+        }
+        if (!document.getElementById('skuCode').value && skuCode) {
+           document.getElementById('skuCode').value = skuCode;
+           autoFilled = true;
+        }
 
-        showStatus('✨ Auto-filled from last session', 'info');
-        setTimeout(() => {
-          if(!isRunning) status.style.display = 'none';
-        }, 3000);
+        if (autoFilled) {
+          showStatus('✨ Auto-filled missing fields from last session', 'info');
+          setTimeout(() => {
+            if(!isRunning) status.style.display = 'none';
+          }, 3000);
+        }
       }
     });
   }
