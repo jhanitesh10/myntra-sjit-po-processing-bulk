@@ -88,7 +88,10 @@ async function startRequests(data) {
     failed: 0
   };
 
-  const { cartonId, vendorId, skuCode, requestCount } = data;
+  const { cartonId, vendorId, skuCode, requestCount, delay } = data;
+
+  // Convert seconds to ms, default to 1500ms
+  const delayMs = (delay || 1.5) * 1000;
 
   // No need to manually fetch cookies, credentials: 'include' handles it.
   // We can just proceed directly to making requests.
@@ -108,18 +111,18 @@ async function startRequests(data) {
       // Notify popup of progress
       notifyPopup('progress', null, i, requestCount);
 
-      // Wait 1 second before next request (except for the last one)
+      // Wait before next request (except for the last one)
       if (i < requestCount && !shouldStop) {
-        await sleep(1000);
+        await sleep(delayMs);
       }
     } catch (error) {
       currentProgress.completed = i;
       currentProgress.failed++;
       notifyPopup('error', error.message, i);
 
-      // Continue with next request after 1 second
+      // Continue with next request after delay
       if (i < requestCount && !shouldStop) {
-        await sleep(1000);
+        await sleep(delayMs);
       }
     }
   }

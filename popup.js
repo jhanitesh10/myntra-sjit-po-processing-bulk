@@ -22,6 +22,7 @@ form.addEventListener('submit', async (e) => {
   const vendorId = document.getElementById('vendorId').value.trim();
   const skuCode = document.getElementById('skuCode').value.trim();
   const requestCount = parseInt(document.getElementById('requestCount').value);
+  const delay = parseFloat(document.getElementById('delay').value);
 
   // Validate inputs
   if (!cartonId || !vendorId || !skuCode || !requestCount || requestCount < 1) {
@@ -34,8 +35,13 @@ form.addEventListener('submit', async (e) => {
     return;
   }
 
+  if (!delay || delay < 0.1) {
+    showStatus('Delay must be at least 0.1 seconds', 'error');
+    return;
+  }
+
   // Start the process
-  startProcess(cartonId, vendorId, skuCode, requestCount);
+  startProcess(cartonId, vendorId, skuCode, requestCount, delay);
 });
 
 // Stop button
@@ -44,7 +50,7 @@ stopBtn.addEventListener('click', () => {
 });
 
 // Start the request process
-function startProcess(cartonId, vendorId, skuCode, requestCount) {
+function startProcess(cartonId, vendorId, skuCode, requestCount, delay) {
   isRunning = true;
 
   // Update UI
@@ -67,7 +73,8 @@ function startProcess(cartonId, vendorId, skuCode, requestCount) {
       cartonId,
       vendorId,
       skuCode,
-      requestCount
+      requestCount,
+      delay
     }
   });
 }
