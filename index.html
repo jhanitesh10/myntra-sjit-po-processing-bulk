@@ -3,17 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Myntra Inventory Automation Extension</title>
-  <meta name="description" content="Automate bulk inventory entry for Myntra partner portal. Save hours of work with a simple Chrome extension.">
+  <title>Myntra Inventory Automation</title>
+  <meta name="description" content="Streamline your Myntra Partner operations. Automate bulk carton creation with zero errors and maximum efficiency.">
   <style>
     :root {
-      --primary: #667eea;
-      --secondary: #764ba2;
-      --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-      --text-dark: #333;
-      --text-light: #666;
-      --bg-light: #f5f5f5;
+      /* Enterprise Blue Palette */
+      --primary: #007bff;
+      --primary-dark: #0056b3;
+      --accent: #00d4ff;
+      --text-main: #1a1f36;
+      --text-sub: #4f566b;
+      --bg-light: #f7f9fc;
       --white: #ffffff;
+      --shadow-sm: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3);
     }
 
     * {
@@ -23,337 +26,456 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: var(--bg-light);
-      color: var(--text-dark);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Ubuntu, sans-serif;
+      background-color: var(--white);
+      color: var(--text-main);
       line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1080px;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 24px;
+    }
+
+    /* Navbar */
+    nav {
+      padding: 24px 0;
+    }
+    nav .logo {
+      font-weight: 800;
+      font-size: 20px;
+      color: var(--primary-dark);
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    nav .logo span {
+      background: rgba(0, 123, 255, 0.1);
+      color: var(--primary);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      text-transform: uppercase;
     }
 
     /* Hero Section */
     .hero {
-      background: var(--gradient);
-      color: var(--white);
-      padding: 80px 0;
+      padding: 80px 0 100px;
       text-align: center;
-      margin-bottom: 60px;
-      clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+      background: radial-gradient(circle at top right, #f7f9fc, transparent),
+                  radial-gradient(circle at bottom left, #f7f9fc, transparent);
     }
 
     .hero h1 {
-      font-size: 48px;
-      margin-bottom: 20px;
+      font-size: 52px;
+      line-height: 1.1;
       font-weight: 800;
-    }
-
-    .hero p {
-      font-size: 20px;
-      margin-bottom: 40px;
-      opacity: 0.9;
-      max-width: 600px;
+      letter-spacing: -1.5px;
+      background: linear-gradient(135deg, var(--text-main) 0%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 24px;
+      max-width: 800px;
       margin-left: auto;
       margin-right: auto;
     }
 
-    .cta-button {
-      display: inline-block;
-      padding: 16px 32px;
-      background: var(--white);
-      color: var(--primary);
-      text-decoration: none;
-      font-weight: bold;
-      border-radius: 50px;
-      font-size: 18px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    .hero p {
+      font-size: 20px;
+      color: var(--text-sub);
+      max-width: 600px;
+      margin: 0 auto 40px;
+      font-weight: 400;
     }
 
-    .cta-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-    }
-
-    .cta-sub {
-      display: block;
-      margin-top: 10px;
-      font-size: 14px;
-      opacity: 0.8;
-    }
-
-    /* Steps Section */
-    .steps-section {
-      padding: 40px 0;
-    }
-
-    .step-card {
-      background: var(--white);
-      border-radius: 12px;
-      padding: 30px;
-      margin-bottom: 30px;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .step-header {
-      display: flex;
+    .btn {
+      display: inline-flex;
       align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .step-number {
-      width: 40px;
-      height: 40px;
-      background: var(--gradient);
-      color: var(--white);
-      border-radius: 50%;
-      text-align: center;
-      line-height: 40px;
-      font-weight: bold;
-      margin-right: 15px;
-      flex-shrink: 0;
-    }
-
-    .step-title {
-      font-size: 24px;
-      color: var(--text-dark);
+      justify-content: center;
+      padding: 16px 36px;
+      font-size: 16px;
       font-weight: 600;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
     }
 
-    .step-content {
-      color: var(--text-light);
-      padding-left: 55px;
+    .btn-primary {
+      background: var(--primary);
+      color: var(--white);
+      box-shadow: 0 4px 14px 0 rgba(0, 118, 255, 0.39);
     }
 
-    .code-snippet {
-      background: #2d2d2d;
-      color: #f8f8f2;
-      padding: 15px;
-      border-radius: 6px;
-      font-family: 'Courier New', monospace;
-      margin: 10px 0;
-      overflow-x: auto;
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0, 118, 255, 0.23);
     }
 
-    /* Feature Grid */
-    .features-grid {
+    .hero-visual {
+      margin-top: 60px;
+      position: relative;
+    }
+
+    .hero-visual img {
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      max-width: 80%;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    /* Value Stats */
+    .stats {
+      border-top: 1px solid #e6ebf1;
+      border-bottom: 1px solid #e6ebf1;
+      padding: 60px 0;
+      background: #fafbff;
+    }
+
+    .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      margin: 40px 0;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      text-align: center;
+    }
+
+    .stat-item h3 {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .stat-item p {
+      font-size: 15px;
+      color: var(--text-sub);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Features Grid */
+    .features {
+      padding: 100px 0;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-header h2 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+
+    .section-header p {
+      color: var(--text-sub);
+      font-size: 18px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
     }
 
     .feature-card {
-      background: var(--white);
-      padding: 25px;
+      padding: 32px;
       border-radius: 12px;
-      border-left: 5px solid var(--primary);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      background: var(--white);
+      border: 1px solid #e6ebf1;
+      transition: all 0.2s ease;
     }
 
-    .feature-icon {
-      font-size: 32px;
-      margin-bottom: 15px;
+    .feature-card:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-2px);
+    }
+
+    .icon-box {
+      width: 48px;
+      height: 48px;
+      background: rgba(0, 123, 255, 0.1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 24px;
     }
 
     .feature-card h3 {
-      font-size: 18px;
-      margin-bottom: 10px;
-      color: var(--text-dark);
+      font-size: 20px;
+      margin-bottom: 12px;
+      font-weight: 600;
     }
 
     .feature-card p {
-      font-size: 14px;
-      color: var(--text-light);
+      color: var(--text-sub);
+      font-size: 16px;
     }
 
-    /* Visual Demo (from demo.html) */
-    .demo-visual {
-      max-width: 400px;
-      margin: 30px auto;
-      background: var(--gradient);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-    }
-
-    .popup-mockup {
-      background: var(--white);
-      border-radius: 8px;
-      padding: 20px;
-    }
-
-    .mock-input {
-      background: #f0f0f0;
-      border: 1px solid #e0e0e0;
-      height: 36px;
-      width: 100%;
-      margin-bottom: 12px;
-      border-radius: 6px;
-    }
-    .mock-label { font-size: 12px; margin-bottom: 4px; display: block; font-weight: 600; }
-    .mock-btn { height: 40px; width: 100%; background: var(--gradient); border-radius: 6px; margin-top: 10px; }
-    
-    /* Time Savings */
-    .savings-section {
-      text-align: center;
-      padding: 60px 0;
-      background: var(--white);
+    /* Installation */
+    .install {
+      background: var(--text-main);
+      color: var(--white);
+      padding: 80px 0;
       border-radius: 20px;
-      margin: 60px 0;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      margin-bottom: 80px;
+      text-align: center;
     }
 
-    .stat-grid {
+    .install h2 {
+      margin-bottom: 40px;
+    }
+
+    .steps {
       display: flex;
       justify-content: center;
-      gap: 60px;
-      margin-top: 40px;
+      gap: 40px;
       flex-wrap: wrap;
+      text-align: left;
+      max-width: 800px;
+      margin: 0 auto;
     }
 
-    .stat-item h3 { font-size: 48px; color: var(--primary); margin-bottom: 10px; }
-    .stat-item p { font-size: 18px; color: var(--text-light); }
+    .step {
+      flex: 1;
+      min-width: 200px;
+    }
 
-    /* Footer */
+    .step-num {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    .step h3 {
+      margin-bottom: 8px;
+    }
+
+    .step p {
+      color: #aab7c4;
+      font-size: 14px;
+    }
+
     footer {
-      text-align: center;
+      border-top: 1px solid #e6ebf1;
       padding: 40px 0;
-      color: var(--text-light);
-      border-top: 1px solid #eee;
-      margin-top: 60px;
+      text-align: center;
+      color: var(--text-sub);
+      font-size: 14px;
     }
 
     @media (max-width: 768px) {
       .hero h1 { font-size: 36px; }
-      .stat-grid { gap: 30px; }
+      .stats-grid { grid-template-columns: 1fr; gap: 24px; }
+      .steps { flex-direction: column; text-align: center; }
+      .step-num { margin: 0 auto 16px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Hero Section -->
-  <header class="hero">
+  <nav>
     <div class="container">
-      <h1>📦 Myntra Inventory Automation</h1>
-      <p>Automate bulk inventory updates in minutes, not hours. A simple, secure Chrome extension for Myntra partners.</p>
-      
-      <a href="extension.zip" class="cta-button" download>
-        Download Extension
-      </a>
-      <span class="cta-sub">v1.0.0 • ZIP file • Free to use</span>
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 512 512" style="vertical-align: middle;">
+           <rect width="100%" height="100%" fill="none"/>
+           <path d="M50 150 L250 260 L450 150 L450 380 Q450 430 400 450 L250 500 L100 450 Q50 430 50 380 Z" fill="#007bff" />
+        </svg>
+        Inventory Automation
+      </div>
     </div>
-  </header>
+  </nav>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Eliminate Manual Data Entry from Your Operations</h1>
+      <p>The simple solution for Myntra Partners. Automate bulk inventory creation with precision and speed.</p>
+
+      <a href="extension.zip" download class="btn btn-primary">Download Extension</a>
+      <p style="font-size: 12px; margin-top: 12px; color: #8898aa;">v1.0.0 • Secure Local Execution</p>
+    </div>
+  </section>
+
+  <section class="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <h3>10x</h3>
+          <p>Faster Processing</p>
+        </div>
+        <div class="stat-item">
+          <h3>100%</h3>
+          <p>Error Free</p>
+        </div>
+        <div class="stat-item">
+          <h3>1k+</h3>
+          <p>Capped Batch Size</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="privacy" style="background: #f0f7ff; padding: 80px 0; text-align: center; border-bottom: 1px solid #e6ebf1;">
+    <div class="container">
+      <h2 style="color: #004085; font-size: 32px; font-weight: 700; margin-bottom: 20px;">Your Data Stays Yours. Always.</h2>
+      <p style="font-size: 19px; max-width: 700px; margin: 0 auto 40px; color: #4f566b;">
+        We built this tool with a <strong>privacy-first</strong> architecture. The extension operates entirely within your browser environment.
+        <br>We do <strong>not</strong> collect, store, or transmit your inventory data to any external server.
+      </p>
+
+      <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+         <div style="background: white; padding: 12px 24px; border-radius: 50px; font-weight: 600; color: #007bff; border: 1px solid #cce5ff; display: flex; align-items: center; gap: 8px;">
+           <span style="font-size: 18px;">🔒</span> No Cloud Database
+         </div>
+         <div style="background: white; padding: 12px 24px; border-radius: 50px; font-weight: 600; color: #007bff; border: 1px solid #cce5ff; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 18px;">💻</span> Runs 100% Locally
+         </div>
+         <div style="background: white; padding: 12px 24px; border-radius: 50px; font-weight: 600; color: #007bff; border: 1px solid #cce5ff; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 18px;">🚫</span> Zero External Tracking
+         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="container">
+      <div class="section-header">
+        <h2>Built for High-Volume Operations</h2>
+        <p>Why leading partners switch to automated workflows.</p>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="icon-box">🛡️</div>
+          <h3>Secure & Private</h3>
+          <p>Running 100% locally in your browser. No data leaves your machine. We leverage existing session cookies securely.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon-box">⚡</div>
+          <h3>Optimized Performance</h3>
+          <p>Smart queuing system with adjustable delays prevents API throttling while maximizing throughput.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon-box">💾</div>
+          <h3>State Persistence</h3>
+          <p>Never lose your work. The extension remembers your last configuration, creating a seamless workflow.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <div class="container">
-    
-    <!-- Time Savings Highlight -->
-    <section class="savings-section">
-      <h2>Why use this tool?</h2>
-      <div class="stat-grid">
-        <div class="stat-item">
-          <h3>95%</h3>
-          <p>Less time spent</p>
-        </div>
-        <div class="stat-item">
-          <h3>0</h3>
-          <p>Manual errors</p>
-        </div>
-        <div class="stat-item">
-          <h3>1000+</h3>
-          <p>Requests per batch</p>
-        </div>
-      </div>
-    </section>
-
     <!-- Installation Steps -->
-    <section class="steps-section" id="install">
-      <h2 style="text-align: center; margin-bottom: 40px;">How to Install</h2>
+    <section class="steps-section" id="install" style="margin-bottom: 60px;">
+      <h2 style="text-align: center; margin-bottom: 40px; font-size: 30px;">Installation Guide (One-Time Setup)</h2>
 
-      <div class="step-card">
-        <div class="step-header">
-          <div class="step-number">1</div>
-          <div class="step-title">Download & Extract</div>
-        </div>
-        <div class="step-content">
-          <p>Click the download button above to get the <code>extension.zip</code> file. Extract/Unzip the contents to a folder on your computer.</p>
-        </div>
+      <div style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; margin-bottom: 30px; text-align: center; max-width: 800px; margin-left: auto; margin-right: auto;">
+        <strong>Note for Non-Techies:</strong> This is a custom tool for your team. You won't find it in the public Chrome Store. Follow these simple steps to install it manually.
       </div>
 
-      <div class="step-card">
-        <div class="step-header">
-          <div class="step-number">2</div>
-          <div class="step-title">Load in Chrome</div>
-        </div>
-        <div class="step-content">
-          <p>Open Google Chrome and paste this into the address bar:</p>
-          <div class="code-snippet">chrome://extensions/</div>
-          <p style="margin-top: 15px;">Enable <strong>Developer mode</strong> (top right), then click <strong>Load unpacked</strong> and select the folder you extracted.</p>
-        </div>
-      </div>
+      <div class="steps" style="display: flex; gap: 30px; justify-content: center; flex-wrap: wrap;">
 
-      <div class="step-card">
-        <div class="step-header">
-          <div class="step-number">3</div>
-          <div class="step-title">Start Automating</div>
-        </div>
-        <div class="step-content">
-          <p>Login to the <a href="https://partners.myntrainfo.com/" target="_blank">Myntra Partner Portal</a>. Click the extension icon in your toolbar, enter your inventory details, and hit start!</p>
-          
-          <div class="demo-visual">
-            <div class="popup-mockup">
-              <label class="mock-label">Carton ID</label>
-              <div class="mock-input"></div>
-              <label class="mock-label">Vendor ID</label>
-              <div class="mock-input"></div>
-              <label class="mock-label">SKU Code</label>
-              <div class="mock-input"></div>
-              <div class="mock-btn"></div>
-            </div>
-            <p style="color: white; text-align: center; margin-top: 15px; font-size: 14px;">Simple, clean interface</p>
+        <div class="feature-card" style="flex: 1; min-width: 300px; text-align: left;">
+          <div style="display: flex; align-items: center; margin-bottom: 15px;">
+             <div class="step-num" style="margin-bottom: 0; margin-right: 15px;">1</div>
+             <h3 style="margin: 0; font-size: 20px;">Download & Unzip</h3>
           </div>
+          <p style="color: #4f566b; font-size: 15px;">
+            Click the big blue <strong>Download Extension</strong> button above.
+            <br><br>
+            You will get a file named <code>extension.zip</code>. <strong style="color: #007bff;">Double-click</strong> this file to "Unzip" or "Extract" it. You should see a new folder appear.
+          </p>
         </div>
+
+        <div class="feature-card" style="flex: 1; min-width: 300px; text-align: left;">
+          <div style="display: flex; align-items: center; margin-bottom: 15px;">
+             <div class="step-num" style="margin-bottom: 0; margin-right: 15px;">2</div>
+             <h3 style="margin: 0; font-size: 20px;">Open Extensions</h3>
+          </div>
+          <p style="color: #4f566b; font-size: 15px;">
+            Open Google Chrome. In the top address bar, copy and paste this link:
+            <br>
+            <code style="background: #e9ecef; padding: 4px; border-radius: 4px; display: block; margin: 8px 0; text-align: center;">chrome://extensions/</code>
+            Or go to <strong>Menu (⋮) > Extensions > Manage Extensions</strong>.
+          </p>
+        </div>
+
+        <div class="feature-card" style="flex: 1; min-width: 300px; text-align: left;">
+          <div style="display: flex; align-items: center; margin-bottom: 15px;">
+             <div class="step-num" style="margin-bottom: 0; margin-right: 15px;">3</div>
+             <h3 style="margin: 0; font-size: 20px;">Enable & Load</h3>
+          </div>
+          <p style="color: #4f566b; font-size: 15px;">
+            1. Toggle the <strong>Developer mode</strong> switch (top right).
+            <br>2. Click <strong>Load unpacked</strong> (top left).
+            <br>3. Select the <strong>folder</strong> from Step 1.
+            <br><br>
+            <span style="color: green; font-weight: bold;">✅ Done! The blue box icon will appear.</span>
+          </p>
+        </div>
+
       </div>
     </section>
-
-    <!-- Features -->
-    <section>
-      <h2 style="text-align: center; margin-bottom: 20px;">Key Features</h2>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">🔐</div>
-          <h3>Secure & Private</h3>
-          <p>Runs entirely in your browser. Extracts session cookies automatically without storing sensitive data.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">⚡</div>
-          <h3>Smart Automation</h3>
-          <p>Makes requests at safe intervals (1/sec) to respect API limits while working as fast as possible.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">📊</div>
-          <h3>Live Tracking</h3>
-          <p>Watch progress in real-time. See success/failure status for every single request instantly.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🛑</div>
-          <h3>Full Control</h3>
-          <p>Stop the process at any time. The extension handles errors gracefully and keeps running.</p>
-        </div>
-      </div>
-    </section>
-
   </div>
+
+  <!-- How to Use Manual -->
+  <section class="usage-section" style="padding: 80px 0; background: #fafbff; border-top: 1px solid #e6ebf1;">
+    <div class="container">
+      <h2 style="text-align: center; margin-bottom: 50px; font-size: 32px; font-weight: 700;">How to Use the Tool</h2>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+          <div style="background: white; padding: 30px; border-radius: 12px; border: 1px solid #e6ebf1; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+              <h3 style="color: #007bff; margin-bottom: 15px; font-size: 20px;">Step 1: Go to Myntra Portal</h3>
+              <p style="color: #4f566b;">Log in to the <strong>Myntra Partner Portal</strong> and navigate to the "Scan & Pack" or "Carton Creation" page where you normally scan items.</p>
+          </div>
+
+          <div style="background: white; padding: 30px; border-radius: 12px; border: 1px solid #e6ebf1; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+              <h3 style="color: #007bff; margin-bottom: 15px; font-size: 20px;">Step 2: Check & Open</h3>
+              <p style="color: #4f566b;">Manually create your <strong>first</strong> carton scan (just one!) to let the system "wake up". Then, click the <strong>Blue Box Icon</strong> in your Chrome toolbar.</p>
+          </div>
+
+          <div style="background: white; padding: 30px; border-radius: 12px; border: 1px solid #e6ebf1; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+              <h3 style="color: #007bff; margin-bottom: 15px; font-size: 20px;">Step 3: Auto-Fill & Run</h3>
+              <p style="color: #4f566b;">The tool will <strong>automatically capture</strong> your Carton ID and Vendor ID. Just enter:</p>
+              <ul style="margin-left: 20px; color: #555; margin-top: 10px; font-size: 14px;">
+                  <li style="margin-bottom: 5px;"><strong>SKU Code</strong> (the item you are packing)</li>
+                  <li><strong>Number of SKUs</strong> (how many in this box?)</li>
+              </ul>
+              <p style="margin-top: 15px; color: #4f566b;">Click <strong>Start Requests</strong> and watch it finish in seconds!</p>
+          </div>
+      </div>
+
+      <div style="margin-top: 60px; background: #e3f2fd; padding: 30px; border-radius: 12px; text-align: center; border: 1px solid #b8daff;">
+          <h4 style="color: #004085; margin-bottom: 15px; font-size: 18px;">💡 Important Tips for Operators</h4>
+          <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;">
+             <span style="color: #004085; font-weight: 500;">• Keep the Myntra Portal tab <strong>open</strong> while running.</span>
+             <span style="color: #004085; font-weight: 500;">• If you see an error, click "Stop", refresh, and retry.</span>
+             <span style="color: #004085; font-weight: 500;">• Vendor ID is saved automatically.</span>
+          </div>
+      </div>
+    </div>
+  </section>
 
   <footer>
     <div class="container">
-      <p>Myntra Inventory Automation Extension • v1.0.0</p>
-      <p style="font-size: 12px; margin-top: 10px;">Not affiliated with Myntra. Use responsibly and in accordance with API policies.</p>
+      <p>&copy; 2026 Inventory Automation Tool. Designed for Myntra Partners.</p>
     </div>
   </footer>
 
