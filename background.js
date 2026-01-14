@@ -101,7 +101,7 @@ async function startRequests(data) {
     }
 
     try {
-      await makeRequest(cartonId, vendorId, skuCode, cookies, i);
+      await makeRequest(cartonId, vendorId, skuCode, i);
       currentProgress.completed = i;
       currentProgress.successful++;
 
@@ -134,7 +134,7 @@ async function startRequests(data) {
 }
 
 // Make a single API request
-async function makeRequest(cartonId, vendorId, skuCode, cookies, requestNumber) {
+async function makeRequest(cartonId, vendorId, skuCode, requestNumber) {
   const url = TARGET_URL;
 
   const payload = {
