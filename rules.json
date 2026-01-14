@@ -1,0 +1,19 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        { "header": "Origin", "operation": "set", "value": "https://partners.myntrainfo.com" },
+        { "header": "Referer", "operation": "set", "value": "https://partners.myntrainfo.com/" },
+        { "header": "x-myntra-app-name", "operation": "set", "value": "partners" },
+        { "header": "User-Agent", "operation": "set", "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:146.0) Gecko/20100101 Firefox/146.0" }
+      ]
+    },
+    "condition": {
+      "urlFilter": "https://partnersapi.myntrainfo.com/api/scanandpack/cartonItem/create",
+      "resourceTypes": ["xmlhttprequest"]
+    }
+  }
+]

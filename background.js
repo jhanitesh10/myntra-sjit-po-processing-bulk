@@ -90,19 +90,8 @@ async function startRequests(data) {
 
   const { cartonId, vendorId, skuCode, requestCount } = data;
 
-  // Get cookies - prioritize captured cookie
-  let cookies = await getCapturedCookie();
-
-  if (!cookies) {
-    // Fallback to browser cookies
-    cookies = await getCookies();
-  }
-
-  if (!cookies) {
-    notifyPopup('error', 'Failed to get session cookies. Please make sure you have performed at least one manual action on the portal to capture the session.');
-    isRunning = false;
-    return;
-  }
+  // No need to manually fetch cookies, credentials: 'include' handles it.
+  // We can just proceed directly to making requests.
 
   // Make requests in a loop
   for (let i = 1; i <= requestCount; i++) {
@@ -156,18 +145,12 @@ async function makeRequest(cartonId, vendorId, skuCode, cookies, requestNumber) 
 
   const response = await fetch(url, {
     method: 'POST',
+    credentials: 'include', // Important: Sends browser cookies automatically
     headers: {
       'Accept': 'application/json',
       'Accept-Language': 'en-US,en;q=0.5',
-      'Content-Type': 'application/json',
-      'Referer': 'https://partners.myntrainfo.com/',
-      'X-Requested-With': 'XMLHttpRequest',
-      'x-myntra-app-name': 'partners',
-      'Origin': 'https://partners.myntrainfo.com',
-      'Sec-Fetch-Dest': 'empty',
-      'Sec-Fetch-Mode': 'cors',
-      'Sec-Fetch-Site': 'same-site',
-      'Cookie': cookies
+      'Content-Type': 'application/json'
+      // Origin, Referer, User-Agent are handled by rules.json
     },
     body: JSON.stringify(payload)
   });
